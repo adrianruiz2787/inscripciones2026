@@ -1,0 +1,3559 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Consulta - Pre-Inscripciones 2026</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #667eea;
+            font-size: 2.2em;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .search-section {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+        }
+
+        .search-title {
+            font-size: 1.5em;
+            color: #333;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .search-controls {
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .search-input-wrapper {
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 15px 50px 15px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1.1em;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .clear-btn {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #f5f5f5;
+            border: none;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .clear-btn:hover {
+            background: #e0e0e0;
+        }
+
+        .clear-btn.active {
+            display: flex;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .filters-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .filter-group label {
+            font-weight: 600;
+            color: #555;
+            font-size: 0.9em;
+        }
+
+        select {
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            background: white;
+            cursor: pointer;
+            transition: border-color 0.3s ease;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .results-section {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+            display: none;
+        }
+
+        .results-section.active {
+            display: block;
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .results-count {
+            font-size: 1.2em;
+            color: #333;
+        }
+
+        .results-count strong {
+            color: #667eea;
+            font-size: 1.3em;
+        }
+
+        .results-grid {
+            display: grid;
+            gap: 15px;
+        }
+
+        .alumno-card {
+            background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%);
+            border: 2px solid #e8ecff;
+            border-left: 5px solid #667eea;
+            padding: 20px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .alumno-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.15);
+        }
+
+        .alumno-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 15px;
+        }
+
+        .alumno-nombre {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .alumno-documento {
+            color: #666;
+            font-size: 0.95em;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+
+        .badge-asignada {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .badge-pendiente {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .alumno-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #e8ecff;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .detail-label {
+            font-size: 0.85em;
+            color: #999;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .detail-value {
+            font-size: 1.05em;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .detail-value.highlight {
+            color: #667eea;
+            font-size: 1.15em;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .no-results-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+
+        .no-results-text {
+            font-size: 1.3em;
+            margin-bottom: 10px;
+            color: #666;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stat-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        @media (max-width: 768px) {
+            .search-controls {
+                grid-template-columns: 1fr;
+            }
+
+            .filters-row {
+                grid-template-columns: 1fr;
+            }
+
+            .alumno-details {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 1.5em;
+            }
+        }
+
+        .help-text {
+            background: #f0f4ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 0.95em;
+            color: #555;
+        }
+
+        .help-text strong {
+            color: #667eea;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📚 Sistema de Consulta - Pre-Inscripciones 2026</h1>
+            <p class="subtitle">1º Año - Búsqueda Rápida de Alumnos</p>
+        </header>
+
+        <div class="dashboard">
+            <div class="stat-card">
+                <div class="stat-label">Total Alumnos</div>
+                <div class="stat-value" id="totalAlumnos">205</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Vacantes Asignadas</div>
+                <div class="stat-value" id="totalAsignadas">173</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Vacantes Pendientes</div>
+                <div class="stat-value" style="color: #f59e0b;" id="totalPendientes">27</div>
+            </div>
+        </div>
+
+        <div class="search-section">
+            <h2 class="search-title">🔍 Buscar Alumno</h2>
+            
+            <div class="search-controls">
+                <div class="search-input-wrapper">
+                    <input 
+                        type="text" 
+                        id="searchInput" 
+                        class="search-input" 
+                        placeholder="Ingrese nombre, apellido o documento del alumno..."
+                        autocomplete="off"
+                    >
+                    <button class="clear-btn" id="clearSearchBtn" title="Limpiar búsqueda">✕</button>
+                </div>
+                <button class="btn btn-primary" id="searchBtn">Buscar</button>
+                <button class="btn btn-secondary" id="resetBtn">Limpiar Todo</button>
+            </div>
+
+            <div class="filters-row">
+                <div class="filter-group">
+                    <label>Filtrar por Curso:</label>
+                    <select id="cursoFilter">
+                        <option value="">Todos los cursos</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Filtrar por Condición:</label>
+                    <select id="condicionFilter">
+                        <option value="">Todas las condiciones</option>
+                        <option value="Vacante Asignada">Vacante Asignada</option>
+                        <option value="Vacante Pendiente">Vacante Pendiente</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Filtrar por Turno:</label>
+                    <select id="turnoFilter">
+                        <option value="">Todos los turnos</option>
+                        <option value="T.M">Turno Mañana</option>
+                        <option value="T.T">Turno Tarde</option>
+                        <option value="T.V">Turno Vespertino</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="help-text">
+                <strong>💡 Ayuda:</strong> Puede buscar por nombre completo, apellido, o número de documento. Use los filtros adicionales para refinar su búsqueda. Los resultados se actualizan automáticamente mientras escribe.
+            </div>
+        </div>
+
+        <div class="results-section" id="resultsSection">
+            <div class="results-header">
+                <div class="results-count" id="resultsCount">
+                    Resultados encontrados: <strong>0</strong>
+                </div>
+            </div>
+            <div class="results-grid" id="resultsGrid"></div>
+        </div>
+    </div>
+
+    <script>
+        // Base de datos de alumnos - SE LLENARÁ CON DATOS REALES
+        const DB_ALUMNOS = {
+  "alumnos": [
+    {
+      "id": 1,
+      "nombre": "ALVAREZ CIRO ALEJO",
+      "documento": "53355134",
+      "edad": "12 años 11 meses",
+      "promedio": 9.91,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 1ra",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2644840762",
+      "motivo": ""
+    },
+    {
+      "id": 2,
+      "nombre": "OCHOA MORALES CAMILA SOLEDAD",
+      "documento": "53551156",
+      "edad": "12 años 9 meses",
+      "promedio": 9.88,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 5ta",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645750322",
+      "motivo": ""
+    },
+    {
+      "id": 3,
+      "nombre": "RODRIGUEZ PAEZ BRYANNA SOL",
+      "documento": "53553230",
+      "edad": "12 años 7 meses",
+      "promedio": 9.87,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 2da",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645203040",
+      "motivo": ""
+    },
+    {
+      "id": 4,
+      "nombre": "CABRERA GOMEZ ALISON YOSELIN",
+      "documento": "54720011",
+      "edad": "12 años 10 meses",
+      "promedio": 9.864,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 6ta",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2646621011",
+      "motivo": ""
+    },
+    {
+      "id": 5,
+      "nombre": "TOBAR ZOE MAGALI",
+      "documento": "53358909",
+      "edad": "12 años 8 meses",
+      "promedio": 9.8,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 3ra",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645419004",
+      "motivo": ""
+    },
+    {
+      "id": 6,
+      "nombre": "QUIROGA CALIVAR ALESSANDRA GUADALUPE",
+      "documento": "53109441",
+      "edad": "12 años 10 meses",
+      "promedio": 9.79,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 7ma",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645709950",
+      "motivo": ""
+    },
+    {
+      "id": 7,
+      "nombre": "ANTE ARROYO PRINCESA ASHIEY",
+      "documento": "53357219",
+      "edad": "13 años 0 meses",
+      "promedio": 9.78,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 4ta",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2644116321",
+      "motivo": ""
+    },
+    {
+      "id": 8,
+      "nombre": "DE LOS RIOS JOFRE IAN SEBASTIAN",
+      "documento": "53931370",
+      "edad": "12 años 1 meses",
+      "promedio": 9.77,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 8va",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2644111704",
+      "motivo": ""
+    },
+    {
+      "id": 9,
+      "nombre": "LUNA INGLESES BRIANNA VALENTINA",
+      "documento": "53355595",
+      "edad": "12 años 6 meses",
+      "promedio": 9.73,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 1ra",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645114950",
+      "motivo": "Completo 23/12"
+    },
+    {
+      "id": 10,
+      "nombre": "SORAIDE KEVIN TISGO",
+      "documento": "53551750",
+      "edad": "12 años 6 meses",
+      "promedio": 9.7,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 5ta",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2646305590",
+      "motivo": ""
+    },
+    {
+      "id": 11,
+      "nombre": "CASTRO FIGUEROA JOAQUIN GASTON",
+      "documento": "53355576",
+      "edad": "12 años 8 meses",
+      "promedio": 9.68,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 2da",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645274279",
+      "motivo": ""
+    },
+    {
+      "id": 12,
+      "nombre": "VILLAREAL ADRIEL REMERTO",
+      "documento": "53970087",
+      "edad": "12 años 2 meses",
+      "promedio": 9.66,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 6ta",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2646713151",
+      "motivo": ""
+    },
+    {
+      "id": 13,
+      "nombre": "PALACIO FERNANDEZ FRANCISCO BAUTISTA",
+      "documento": "53553724",
+      "edad": "12 años 5 meses",
+      "promedio": 9.65,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 3ra",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2644980009",
+      "motivo": ""
+    },
+    {
+      "id": 14,
+      "nombre": "RECIO CARRIZO ABIGAIL NADIA",
+      "documento": "53355830",
+      "edad": "12 años 11 meses",
+      "promedio": 9.65,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 7ma",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "",
+      "motivo": "COMPLETO 26/12"
+    },
+    {
+      "id": 15,
+      "nombre": "CASTILLO ESPINOSA ALMA SOFIA YASMIN",
+      "documento": "53554908",
+      "edad": "12 años 5 meses",
+      "promedio": 9.64,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 4ta",
+      "turno_solicitado": "T.M.",
+      "observaciones": "PRIMA 1.1",
+      "telefono": "2646605373",
+      "motivo": ""
+    },
+    {
+      "id": 16,
+      "nombre": "CUELLO ESTRADA JUAN PABLO",
+      "documento": "53554447",
+      "edad": "12 años 5 meses",
+      "promedio": 9.64,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 8va",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645294844",
+      "motivo": ""
+    },
+    {
+      "id": 17,
+      "nombre": "DOMINGUEZ MARTIN BAUTISTA",
+      "documento": "53109933",
+      "edad": "12 años 11 meses",
+      "promedio": 9.61,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 1ra",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "",
+      "motivo": "Completo 23/12"
+    },
+    {
+      "id": 18,
+      "nombre": "VIDAL MAÑARIN ENZO LEONEL",
+      "documento": "53280355",
+      "edad": "12 años 2 meses",
+      "promedio": 9.59,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 5ta",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2646203890",
+      "motivo": ""
+    },
+    {
+      "id": 19,
+      "nombre": "ACIAR URIBE MATIAS ARIEL",
+      "documento": "53691432",
+      "edad": "12 años 6 meses",
+      "promedio": 9.58,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 2da",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2644659271",
+      "motivo": ""
+    },
+    {
+      "id": 20,
+      "nombre": "SAAVEDRA MANZANO MARIA VICTORIA",
+      "documento": "52887995",
+      "edad": "12 años 11 meses",
+      "promedio": 9.58,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 6ta",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645467001",
+      "motivo": ""
+    },
+    {
+      "id": 21,
+      "nombre": "TANTEN FEDERICO LISANDRI",
+      "documento": "53552061",
+      "edad": "12 años 8 meses",
+      "promedio": 9.57,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 3ra",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645044757",
+      "motivo": ""
+    },
+    {
+      "id": 22,
+      "nombre": "AVILA MIQUEAS IAN",
+      "documento": "53699907",
+      "edad": "12 años 6 meses",
+      "promedio": 9.55,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 7ma",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645279585",
+      "motivo": ""
+    },
+    {
+      "id": 23,
+      "nombre": "GARAY PATIL MATEO FERNANDO",
+      "documento": "53700648",
+      "edad": "12 años 3 meses",
+      "promedio": 9.55,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 4ta",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2646626296",
+      "motivo": ""
+    },
+    {
+      "id": 24,
+      "nombre": "SALINAS DIAZ CAMILA ",
+      "documento": "53551758",
+      "edad": "12 años 5 meses",
+      "promedio": 9.55,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 8va",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2644745945",
+      "motivo": ""
+    },
+    {
+      "id": 25,
+      "nombre": "RECABARREN MALLEA BASTIAN LISANDRO",
+      "documento": "53358094",
+      "edad": "12 años 8 meses",
+      "promedio": 9.53,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 1ra",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645021258",
+      "motivo": ""
+    },
+    {
+      "id": 26,
+      "nombre": "COSTELA SARMIENTO FACUNDO VALENTIN",
+      "documento": "53929413",
+      "edad": "12 años 1 meses",
+      "promedio": 9.51,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 5ta",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2644407225",
+      "motivo": ""
+    },
+    {
+      "id": 27,
+      "nombre": "CAÑIZARE CASTAÑARES MAXIMO NAHUEL",
+      "documento": "53697819",
+      "edad": "12 años 5 meses",
+      "promedio": 9.48,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 2da",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645706696",
+      "motivo": ""
+    },
+    {
+      "id": 28,
+      "nombre": "ROMAN DYLAN",
+      "documento": "53700137",
+      "edad": "12 años 4 meses",
+      "promedio": 9.48,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 6ta",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2644144944",
+      "motivo": ""
+    },
+    {
+      "id": 29,
+      "nombre": "OLMOS TEJADA THIAGO BENJAMIN",
+      "documento": "53357775",
+      "edad": "12 años 7 meses",
+      "promedio": 9.47,
+      "conducta": "B",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 3ra",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "264463799",
+      "motivo": ""
+    },
+    {
+      "id": 30,
+      "nombre": "AVILA NAZARENO JUAN BAUTISTA",
+      "documento": "53310145",
+      "edad": "12 años 8 meses",
+      "promedio": 9.45,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 7ma",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2646263488",
+      "motivo": ""
+    },
+    {
+      "id": 31,
+      "nombre": "CASIVAR JOEL ALEJANDRO",
+      "documento": "52886399",
+      "edad": "12 años 0 meses",
+      "promedio": 9.45,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 4ta",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2646026200",
+      "motivo": ""
+    },
+    {
+      "id": 32,
+      "nombre": "MONTAÑA AVILA IGNACIO BENJAMIN",
+      "documento": "53931242",
+      "edad": "12 años 0 meses",
+      "promedio": 9.45,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 8va",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2644361761",
+      "motivo": ""
+    },
+    {
+      "id": 33,
+      "nombre": "VERA ROSALES PAUL MATEO",
+      "documento": "53355883",
+      "edad": "12 años 9 meses",
+      "promedio": 9.45,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 1ra",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2644578905",
+      "motivo": ""
+    },
+    {
+      "id": 34,
+      "nombre": "AGUIRRE ZALAZAR SASHA NATASHA",
+      "documento": "53553754",
+      "edad": "12 años 4 meses",
+      "promedio": 9.43,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 5ta",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645312473",
+      "motivo": ""
+    },
+    {
+      "id": 35,
+      "nombre": "ORTIZ ALVAREZ FRANCIS EMIR",
+      "documento": "53553350",
+      "edad": "12 años 7 meses",
+      "promedio": 9.42,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 2da",
+      "turno_solicitado": "T.M",
+      "observaciones": "T.M. HERMANO",
+      "telefono": "2644497482",
+      "motivo": ""
+    },
+    {
+      "id": 36,
+      "nombre": "MAZA MUÑOZ LEANDRO BENICIO",
+      "documento": "53358501",
+      "edad": "12 años 9 meses",
+      "promedio": 9.43,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 6ta",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2646238801",
+      "motivo": ""
+    },
+    {
+      "id": 37,
+      "nombre": "PEREZ GARCIA GUADALUPE AGOSTINA",
+      "documento": "53109041",
+      "edad": "12 años 10 meses",
+      "promedio": 9.41,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 3ra",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645646163",
+      "motivo": ""
+    },
+    {
+      "id": 38,
+      "nombre": "BARIOS CASTRO SANTIAGO MARTIN",
+      "documento": "53552559",
+      "edad": "12 años 5 meses",
+      "promedio": 9.39,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 7ma",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645892003",
+      "motivo": ""
+    },
+    {
+      "id": 39,
+      "nombre": "BUSTOS VILLAFAÑE LOURES YASMIN",
+      "documento": "53551739",
+      "edad": "12 años 7 meses",
+      "promedio": 9.39,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 4ta",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2644734708",
+      "motivo": ""
+    },
+    {
+      "id": 40,
+      "nombre": "VEGA HERRERO DYLAN LEANDRO",
+      "documento": "53358431",
+      "edad": "12 años 10 meses",
+      "promedio": 9.38,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 8va",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645200775",
+      "motivo": ""
+    },
+    {
+      "id": 41,
+      "nombre": "VILLAFAÑE NAVARRO ISAAC EZEQUIEL",
+      "documento": "53554136",
+      "edad": "12 años 6 meses",
+      "promedio": 9.38,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 1ra",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2644743528",
+      "motivo": ""
+    },
+    {
+      "id": 42,
+      "nombre": "ARCE BRITANY MADELEINE",
+      "documento": "53931426",
+      "edad": "12 años 0 meses",
+      "promedio": 9.36,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 5ta",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "26448224741",
+      "motivo": ""
+    },
+    {
+      "id": 43,
+      "nombre": "BRIZUELA MOYA TIZIANO",
+      "documento": "53700740",
+      "edad": "12 años 2 meses",
+      "promedio": 9.36,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 2da",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645065465",
+      "motivo": ""
+    },
+    {
+      "id": 44,
+      "nombre": "SANCHEZ BRITO JESUS EMANUEL",
+      "documento": "53355188",
+      "edad": "12 años 11 meses",
+      "promedio": 9.36,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 6ta",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645599047",
+      "motivo": ""
+    },
+    {
+      "id": 45,
+      "nombre": "ESPECHE SEBASTIAN ALEJANDRO",
+      "documento": "53551607",
+      "edad": "12 años 10 meses",
+      "promedio": 9.34,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 3ra",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645137631",
+      "motivo": ""
+    },
+    {
+      "id": 46,
+      "nombre": "GONZALEZ VECHIO IAN BENJAMIN",
+      "documento": "53929401",
+      "edad": "12 años 1 meses",
+      "promedio": 9.31,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 7ma",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2644656512",
+      "motivo": ""
+    },
+    {
+      "id": 47,
+      "nombre": "GUTIERREZ TELLO ALEJO VALENTINO",
+      "documento": "53700843",
+      "edad": "12 años 2 meses",
+      "promedio": 9.3,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 4ta",
+      "turno_solicitado": "T.M.",
+      "observaciones": "T.M. HERMANO",
+      "telefono": "2644623348",
+      "motivo": ""
+    },
+    {
+      "id": 48,
+      "nombre": "NARVAEZ AGUIRRES JOAQUIN ABEL",
+      "documento": "53558869",
+      "edad": "12 años 9 meses",
+      "promedio": 9.31,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 8va",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645092943",
+      "motivo": ""
+    },
+    {
+      "id": 49,
+      "nombre": "LIN MIRKO ",
+      "documento": "52985444",
+      "edad": "13 años 4 meses",
+      "promedio": 9.3,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 1ra",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "",
+      "motivo": "COMPLETO 26/12"
+    },
+    {
+      "id": 50,
+      "nombre": "TAPIA REBECA ",
+      "documento": "53355587",
+      "edad": "12 años 9 meses",
+      "promedio": 9.3,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 5ta",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645625735",
+      "motivo": ""
+    },
+    {
+      "id": 51,
+      "nombre": "ZABALA ROJAS LUCIANO ALEXIS",
+      "documento": "53551797",
+      "edad": "12 años 3 meses",
+      "promedio": 9.29,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 2da",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645445491",
+      "motivo": ""
+    },
+    {
+      "id": 52,
+      "nombre": "QUIROGA ONTIVERO SANTINO ALEJO",
+      "documento": "53109934",
+      "edad": "12 años 10 meses",
+      "promedio": 9.28,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 6ta",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2644500425",
+      "motivo": ""
+    },
+    {
+      "id": 53,
+      "nombre": "GUARDIA CARRIZO ULISES OSCAR",
+      "documento": "53552092",
+      "edad": "12 años 8 meses",
+      "promedio": 9.27,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 3ra",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645872850",
+      "motivo": ""
+    },
+    {
+      "id": 54,
+      "nombre": "CARRIZO AREVALO YUTHITL ISAIAS",
+      "documento": "53552123",
+      "edad": "12 años 9 meses",
+      "promedio": 9.26,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 7ma",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2646157106",
+      "motivo": ""
+    },
+    {
+      "id": 55,
+      "nombre": "GARCIA ALBORNOZ AGUSTIN EZEQUIEL",
+      "documento": "53551274",
+      "edad": "12 años 8 meses",
+      "promedio": 9.24,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 4ta",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645052484",
+      "motivo": ""
+    },
+    {
+      "id": 56,
+      "nombre": "ABALLAY ALAN NIEN",
+      "documento": "53931385",
+      "edad": "12 años 1 meses",
+      "promedio": 9.23,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 8va",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2643189811",
+      "motivo": ""
+    },
+    {
+      "id": 57,
+      "nombre": "ALDECO MILLA THIAGO ARIEL",
+      "documento": "53552156",
+      "edad": "12 años 8 meses",
+      "promedio": 9.23,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 1ra",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645151886",
+      "motivo": "DOCU. INCOMPLETA "
+    },
+    {
+      "id": 58,
+      "nombre": "ARREDONDO SALINAS BIANCA EMILIA",
+      "documento": "53551762",
+      "edad": "12 años 5 meses",
+      "promedio": 9.23,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 5ta",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645244183",
+      "motivo": ""
+    },
+    {
+      "id": 59,
+      "nombre": "HERRERA CARMONA LIZ ANGELES",
+      "documento": "53699531",
+      "edad": "12 años 4 meses",
+      "promedio": 9.23,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 2da",
+      "turno_solicitado": "T.M.",
+      "observaciones": "",
+      "telefono": "2644521888",
+      "motivo": ""
+    },
+    {
+      "id": 60,
+      "nombre": "LUNA NAVARRO MATEO JEREMIAS",
+      "documento": "53357757",
+      "edad": "12 años 7 meses",
+      "promedio": 9.21,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 6ta",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2646302539",
+      "motivo": ""
+    },
+    {
+      "id": 61,
+      "nombre": "ESPINOSA MALDONADO MORENA ALEXIA",
+      "documento": "53699895",
+      "edad": "12 años 3 meses",
+      "promedio": 9.21,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 3ra",
+      "turno_solicitado": "T.M.",
+      "observaciones": "PRIMA 1.1 ",
+      "telefono": "2645189749",
+      "motivo": "Completo 23/12"
+    },
+    {
+      "id": 62,
+      "nombre": "PAEZ GONZALEZ MATEO PATRICIO",
+      "documento": "53697486",
+      "edad": "12 años 3 meses",
+      "promedio": 9.21,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 7ma",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2644698116",
+      "motivo": ""
+    },
+    {
+      "id": 63,
+      "nombre": "SALINAS PICAR MELISA",
+      "documento": "53700193",
+      "edad": "12 años 2 meses",
+      "promedio": 9.21,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 4ta",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645297579",
+      "motivo": ""
+    },
+    {
+      "id": 64,
+      "nombre": "VEDIA CASTRO MATEO ALEXANDER",
+      "documento": "53930620",
+      "edad": "12 años 1 meses",
+      "promedio": 9.2,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 8va",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645210008",
+      "motivo": ""
+    },
+    {
+      "id": 65,
+      "nombre": "MONTAÑO OLIVARES LUJAN AYMARA",
+      "documento": "53931236",
+      "edad": "12 años 0 meses",
+      "promedio": 9.19,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 1ra",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645563635",
+      "motivo": "COMPLETO 23/12"
+    },
+    {
+      "id": 66,
+      "nombre": "CUELLO CRUZ LAIA JAZMIN",
+      "documento": "53356532",
+      "edad": "12 años 11 meses",
+      "promedio": 9.16,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 5ta",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645712563",
+      "motivo": ""
+    },
+    {
+      "id": 67,
+      "nombre": "VILLAFAÑE BAEZ JONAS TIZIANO",
+      "documento": "53553792",
+      "edad": "12 años 3 meses",
+      "promedio": 9.14,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 2da",
+      "turno_solicitado": "T.M.",
+      "observaciones": "T.M. HERMANA",
+      "telefono": "2645185766",
+      "motivo": ""
+    },
+    {
+      "id": 68,
+      "nombre": "ABASOLO ALBERT JOEL MAXIMILIANO",
+      "documento": "53698602",
+      "edad": "12 años 4 meses",
+      "promedio": 9.13,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 6ta",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645707280",
+      "motivo": ""
+    },
+    {
+      "id": 69,
+      "nombre": "ALCARAZ GOMEZ ELIAS GABRIEL",
+      "documento": "53932918",
+      "edad": "126 años 6 meses",
+      "promedio": 9.13,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 3ra",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645549398",
+      "motivo": ""
+    },
+    {
+      "id": 70,
+      "nombre": "GONZALEZ BORGES HEMERSON BENJAMIN",
+      "documento": "53553705",
+      "edad": "12 años 6 meses",
+      "promedio": 9.125,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 7ma",
+      "turno_solicitado": "T.T.",
+      "observaciones": "",
+      "telefono": "2646713151",
+      "motivo": ""
+    },
+    {
+      "id": 71,
+      "nombre": "OTAROLA GONZALEZ SERGIO ISMAEL",
+      "documento": "53929615",
+      "edad": "12 años 2 meses",
+      "promedio": 9.1,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 4ta",
+      "turno_solicitado": "T.M.",
+      "observaciones": "PORTERA MERCEDEZ",
+      "telefono": "2646606956",
+      "motivo": ""
+    },
+    {
+      "id": 72,
+      "nombre": "ESPEJO GONZALEZ TOMAS LEONEL",
+      "documento": "53551525",
+      "edad": "12 años 8 meses",
+      "promedio": 9.08,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 8va",
+      "turno_solicitado": "T.T.",
+      "observaciones": "T.T. HERMANA",
+      "telefono": "2645718152",
+      "motivo": ""
+    },
+    {
+      "id": 73,
+      "nombre": "ACOSTA RUARTE SHEILA ANAHI",
+      "documento": "53554858",
+      "edad": "12 años 6 meses",
+      "promedio": 9.12,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 1ra",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645588350",
+      "motivo": ""
+    },
+    {
+      "id": 74,
+      "nombre": "FIGUEROA CHIRINO CRISTOPHER TEO",
+      "documento": "53700466",
+      "edad": "12 años 2 meses",
+      "promedio": 9.08,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 5ta",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645869754",
+      "motivo": ""
+    },
+    {
+      "id": 75,
+      "nombre": "ORTIZ MELLERT MALENA NAIARA ",
+      "documento": "53108075",
+      "edad": "12 años 10 meses",
+      "promedio": 9.08,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 2da",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645565669",
+      "motivo": ""
+    },
+    {
+      "id": 76,
+      "nombre": "GONZALEZ GUZMAN JOAQUIN URIEL",
+      "documento": "53358348",
+      "edad": "12 años 9 meses",
+      "promedio": 9.07,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 6ta",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645555145",
+      "motivo": ""
+    },
+    {
+      "id": 77,
+      "nombre": "DURAN OROZCO SANTINO ANDRE",
+      "documento": "53551338",
+      "edad": "12 años 9 meses",
+      "promedio": 9.06,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 3ra",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2646299208",
+      "motivo": ""
+    },
+    {
+      "id": 78,
+      "nombre": "VARGAS IBAZETA TIANA ISABELLA",
+      "documento": "53700467",
+      "edad": "12 años 2 meses",
+      "promedio": 9.06,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 7ma",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645629958",
+      "motivo": ""
+    },
+    {
+      "id": 79,
+      "nombre": "GORDILLO ECHEGARAY MALENA AYLEN ",
+      "documento": "53356279",
+      "edad": "12 años 11 meses",
+      "promedio": 9.0,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 4ta",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2644167776",
+      "motivo": ""
+    },
+    {
+      "id": 80,
+      "nombre": "HERRERA JEREMIAS",
+      "documento": "53554466",
+      "edad": "12 años 5 meses",
+      "promedio": 8.98,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 8va",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "",
+      "motivo": "Completo 23/12"
+    },
+    {
+      "id": 81,
+      "nombre": "MONTENEGRO LEIVA MAXIMO MATEOS",
+      "documento": "53553799",
+      "edad": "12 años 2 meses",
+      "promedio": 8.97,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 1ra",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2644600973",
+      "motivo": ""
+    },
+    {
+      "id": 82,
+      "nombre": "MARINERO VEGA MARCOS JOAQUIN",
+      "documento": "54147625",
+      "edad": "12 años 5 meses",
+      "promedio": 8.97,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 5ta",
+      "turno_solicitado": "T.T.",
+      "observaciones": "T.T. HERMANA",
+      "telefono": "2644521380",
+      "motivo": ""
+    },
+    {
+      "id": 83,
+      "nombre": "GUARDIA MORENO BAUTISTA ROGELIO ",
+      "documento": "53358388",
+      "edad": "12 años 9 meses",
+      "promedio": 8.94,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 2da",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2644165847",
+      "motivo": ""
+    },
+    {
+      "id": 84,
+      "nombre": "OVIEDO ALBACETE BAUTISTA LORENZO",
+      "documento": "53697444",
+      "edad": "12 años 5 meses",
+      "promedio": 8.93,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 6ta",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2644151496",
+      "motivo": ""
+    },
+    {
+      "id": 85,
+      "nombre": "RODRIGUEZ  LUCAS BAUTISTA",
+      "documento": "53699548",
+      "edad": "12 años 4 meses",
+      "promedio": 8.93,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 3ra",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645610736",
+      "motivo": ""
+    },
+    {
+      "id": 86,
+      "nombre": "AMARFIL CARDOZO VALENTIN GIOVANNI",
+      "documento": "53697980",
+      "edad": "12 años 4 meses",
+      "promedio": 8.92,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 7ma",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2643186995",
+      "motivo": ""
+    },
+    {
+      "id": 87,
+      "nombre": "CASTRO RODRIGUEZ ISMAEL OCTAVIO",
+      "documento": "53358480",
+      "edad": "12 años 10 meses",
+      "promedio": 8.92,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 4ta",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645324809",
+      "motivo": ""
+    },
+    {
+      "id": 88,
+      "nombre": "NARVAEZ LESCANO ALVARO TOBIAS ",
+      "documento": "52887978",
+      "edad": "12 años 11 meses",
+      "promedio": 8.92,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 8va",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2644621815",
+      "motivo": ""
+    },
+    {
+      "id": 89,
+      "nombre": "GALEOTE PLAZA KEVIN JOEL",
+      "documento": "53929203",
+      "edad": "12 años 2 meses",
+      "promedio": 8.92,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 1ra",
+      "turno_solicitado": "T.M.",
+      "observaciones": "T.M. HERMANO",
+      "telefono": "2645711972",
+      "motivo": ""
+    },
+    {
+      "id": 90,
+      "nombre": "SAGUA MARRELLI AARON",
+      "documento": "53107959",
+      "edad": "12 años 11 meses",
+      "promedio": 8.88,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 5ta",
+      "turno_solicitado": "No especificado",
+      "observaciones": "PROF. AYELEN FIGUEROA",
+      "telefono": "2644556571",
+      "motivo": ""
+    },
+    {
+      "id": 91,
+      "nombre": "DOMINGUEZ TIAGO IAN",
+      "documento": "53931351",
+      "edad": "12 años 1 meses",
+      "promedio": 8.87,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 2da",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2644036793",
+      "motivo": ""
+    },
+    {
+      "id": 92,
+      "nombre": "SAMBOR TIZIANA JUDITH",
+      "documento": "53351501",
+      "edad": "13 años 11 meses",
+      "promedio": 8.86,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 6ta",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645553673",
+      "motivo": ""
+    },
+    {
+      "id": 93,
+      "nombre": "FERRA HEREDIA ISABELLA PILAR",
+      "documento": "53932254",
+      "edad": "12 años 0 meses",
+      "promedio": 8.85,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 3ra",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2643203105",
+      "motivo": ""
+    },
+    {
+      "id": 94,
+      "nombre": "PACHECO GALEOTE ANA PAULA",
+      "documento": "53554070",
+      "edad": "12 años 7 meses",
+      "promedio": 8.85,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 7ma",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645632572",
+      "motivo": ""
+    },
+    {
+      "id": 95,
+      "nombre": "ROJAS VILDOZO VALENTINA DENISE",
+      "documento": "53358956",
+      "edad": "12 años 7 meses",
+      "promedio": 8.81,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 4ta",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645690300",
+      "motivo": ""
+    },
+    {
+      "id": 96,
+      "nombre": "ZARATE ORO SOL MAITE",
+      "documento": "53551754",
+      "edad": "12 años 6 meses",
+      "promedio": 8.79,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 8va",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2646768319",
+      "motivo": ""
+    },
+    {
+      "id": 97,
+      "nombre": "ARREDONDO RUBEN JOAQUIN",
+      "documento": "53554408",
+      "edad": "12 años 6 meses",
+      "promedio": 8.78,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 1ra",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645017149",
+      "motivo": ""
+    },
+    {
+      "id": 98,
+      "nombre": "VERA SHIRLEY LORENA",
+      "documento": "52551534",
+      "edad": "13 años 7 meses",
+      "promedio": 8.78,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 5ta",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2643192176",
+      "motivo": ""
+    },
+    {
+      "id": 99,
+      "nombre": "VEGA ABASOLO FRANCISCO GUSTAVO",
+      "documento": "53521621",
+      "edad": "12 años 8 meses",
+      "promedio": 8.76,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 2da",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645858710",
+      "motivo": ""
+    },
+    {
+      "id": 100,
+      "nombre": "AGUILERA DIAS SANTINO EZEQUIEL",
+      "documento": "53551665",
+      "edad": "1812 años 7 meses",
+      "promedio": 8.75,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 6ta",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645826203",
+      "motivo": ""
+    },
+    {
+      "id": 101,
+      "nombre": "ACOSTA ANDRADA MAITEN LUDMILA",
+      "documento": "52551718",
+      "edad": "13 años 8 meses",
+      "promedio": 8.72,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 3ra",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2646258102",
+      "motivo": ""
+    },
+    {
+      "id": 102,
+      "nombre": "VARELA JACAMO JONATAN SANTINO ",
+      "documento": "53697227",
+      "edad": "12 años 5 meses",
+      "promedio": 8.69,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 7ma",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2648026216",
+      "motivo": "Completo 23/12"
+    },
+    {
+      "id": 103,
+      "nombre": "PAEZ ARREDONDO BRISA YASMIN",
+      "documento": "53358276",
+      "edad": "12 años 10 meses",
+      "promedio": 8.68,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 4ta",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645020379",
+      "motivo": ""
+    },
+    {
+      "id": 104,
+      "nombre": "ARRIETA JUAN IGNACIO",
+      "documento": "53931906",
+      "edad": "12 años 0 meses",
+      "promedio": 8.66,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 8va",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645823173",
+      "motivo": ""
+    },
+    {
+      "id": 105,
+      "nombre": "HERRERA JUAN RAMON",
+      "documento": "53669642",
+      "edad": "12 años 6 meses",
+      "promedio": 8.66,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 1ra",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645437426",
+      "motivo": ""
+    },
+    {
+      "id": 106,
+      "nombre": "SOSA TRIGO AMIRA DASHA",
+      "documento": "53358403",
+      "edad": "12 años 10 meses",
+      "promedio": 8.64,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 5ta",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2646263175",
+      "motivo": ""
+    },
+    {
+      "id": 107,
+      "nombre": "BURGOA FRIAS AGUSTIN ANDRES",
+      "documento": "53554563",
+      "edad": "12 años 4 meses",
+      "promedio": 8.63,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 2da",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2644404103",
+      "motivo": ""
+    },
+    {
+      "id": 108,
+      "nombre": "RUIZ ALEZ IAN WALTER",
+      "documento": "53929621",
+      "edad": "12 años 2 meses",
+      "promedio": 8.62,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 6ta",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645253256",
+      "motivo": ""
+    },
+    {
+      "id": 109,
+      "nombre": "CABEZA NACIF NICOLE",
+      "documento": "53932919",
+      "edad": "12 años 2 meses",
+      "promedio": 8.6,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 3ra",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2646618183",
+      "motivo": ""
+    },
+    {
+      "id": 110,
+      "nombre": "CEBALLOS MIA ABIGAIL GEORGINA",
+      "documento": "53357280",
+      "edad": "12 años 10 meses",
+      "promedio": 8.6,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 7ma",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2644776137",
+      "motivo": ""
+    },
+    {
+      "id": 111,
+      "nombre": "OLIVAREZ TROCOZO ALEXANDER JAVIER",
+      "documento": "53356200",
+      "edad": "12 años 11 meses",
+      "promedio": 8.6,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 4ta",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2646614191",
+      "motivo": ""
+    },
+    {
+      "id": 112,
+      "nombre": "ABREGO GUEVARA SANTINO ZAHIR",
+      "documento": "53553736",
+      "edad": "12 años 5 meses",
+      "promedio": 8.59,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 8va",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2644771009",
+      "motivo": ""
+    },
+    {
+      "id": 113,
+      "nombre": "BENITO RODRIGUEZ AGUSTIN GABRIEL",
+      "documento": "53553163",
+      "edad": "12 años 8 meses",
+      "promedio": 8.58,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 1ra",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645417424",
+      "motivo": ""
+    },
+    {
+      "id": 114,
+      "nombre": "CASTRO AGUIRRES BENICIO",
+      "documento": "53699848",
+      "edad": "12 años 4 meses",
+      "promedio": 8.57,
+      "conducta": "B",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 5ta",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645733289",
+      "motivo": ""
+    },
+    {
+      "id": 115,
+      "nombre": "GIRAUD MUÑOZ MATEO GEREMIAS ",
+      "documento": "53930025",
+      "edad": "12 años 2 meses",
+      "promedio": 8.57,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 2da",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645757787",
+      "motivo": ""
+    },
+    {
+      "id": 116,
+      "nombre": "SAAVEDRA DOMINGUEZ MAIA SHARON",
+      "documento": "53699967",
+      "edad": "12 años 5 meses",
+      "promedio": 8.57,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 6ta",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2644670410",
+      "motivo": ""
+    },
+    {
+      "id": 117,
+      "nombre": "VILDOZO GIOVANNI",
+      "documento": "52550691",
+      "edad": "13 años 9 meses",
+      "promedio": 8.57,
+      "conducta": "B",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 3ra",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2646046860",
+      "motivo": ""
+    },
+    {
+      "id": 118,
+      "nombre": "BRIZUELA CRISTIAN TAHER",
+      "documento": "53554450",
+      "edad": "12 años 5 meses",
+      "promedio": 8.54,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 7ma",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2644443027",
+      "motivo": ""
+    },
+    {
+      "id": 119,
+      "nombre": "ROSALES GONZALEZ EXEQUIEL ALEXANDER",
+      "documento": "53700462",
+      "edad": "12 años 3 meses",
+      "promedio": 8.54,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 4ta",
+      "turno_solicitado": "T.V.",
+      "observaciones": "HERMANO MELLIZO T.V.",
+      "telefono": "2645475380",
+      "motivo": "COMPLETO 23/12"
+    },
+    {
+      "id": 120,
+      "nombre": "SANCHEZ MIGUEZ LISANDRO BAUTISTA",
+      "documento": "53931599",
+      "edad": "12 años 0 meses",
+      "promedio": 8.52,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 8va",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2644839664",
+      "motivo": ""
+    },
+    {
+      "id": 121,
+      "nombre": "LARA GOMEZ ANGEL JEREMIAS",
+      "documento": "53551767",
+      "edad": "12 años 6 meses",
+      "promedio": 8.49,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 1ra",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645167582",
+      "motivo": ""
+    },
+    {
+      "id": 122,
+      "nombre": "VILDOZO LISANDRO",
+      "documento": "53554740",
+      "edad": "12 años 6 meses",
+      "promedio": 8.48,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 5ta",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2646046860",
+      "motivo": ""
+    },
+    {
+      "id": 123,
+      "nombre": "BLOIN VERA ABRIL CAROLINA",
+      "documento": "53355765",
+      "edad": "12 años 7 meses",
+      "promedio": 8.45,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 2da",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645632131",
+      "motivo": ""
+    },
+    {
+      "id": 124,
+      "nombre": "GUEVARA ESCUDERO MATEO JULIAN",
+      "documento": "53929653",
+      "edad": "12 años 1 meses",
+      "promedio": 8.42,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 6ta",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2644499258",
+      "motivo": ""
+    },
+    {
+      "id": 125,
+      "nombre": "PALMA ZALAZAR LAUTARO JESUS ",
+      "documento": "53732551",
+      "edad": "12 años 7 meses",
+      "promedio": 8.41,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 3ra",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2644849883",
+      "motivo": ""
+    },
+    {
+      "id": 126,
+      "nombre": "REBORA MARTINA NICOLE",
+      "documento": "53821755",
+      "edad": "12 años 3 meses",
+      "promedio": 8.41,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 7ma",
+      "turno_solicitado": "No especificado",
+      "observaciones": "HERMANASTRO",
+      "telefono": "2645256186",
+      "motivo": ""
+    },
+    {
+      "id": 127,
+      "nombre": "ROJAS MOLINA MAXIMO LUCIO",
+      "documento": "53699126",
+      "edad": "12 años 4 meses",
+      "promedio": 8.41,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 4ta",
+      "turno_solicitado": "T.M.",
+      "observaciones": "PRMO",
+      "telefono": "2645676222",
+      "motivo": ""
+    },
+    {
+      "id": 128,
+      "nombre": "VALLE MORAN SANTIAGO AGUSTIN",
+      "documento": "53551442",
+      "edad": "12 años 8 meses",
+      "promedio": 8.41,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 8va",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2644707075",
+      "motivo": ""
+    },
+    {
+      "id": 129,
+      "nombre": "NIEVAS PATIL AMBAR VALENTINA",
+      "documento": "53699518",
+      "edad": "12 años 7 meses",
+      "promedio": 8.4,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 1ra",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645025365",
+      "motivo": ""
+    },
+    {
+      "id": 130,
+      "nombre": "RIVEROS LUCERO YUTHIEL",
+      "documento": "53929104",
+      "edad": "12 años 2 meses",
+      "promedio": 8.4,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 5ta",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645620598",
+      "motivo": ""
+    },
+    {
+      "id": 131,
+      "nombre": "DELGADO BERNALES LISANDRO LIONEL",
+      "documento": "53700823",
+      "edad": "12 años 2 meses",
+      "promedio": 8.39,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 2da",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645742226",
+      "motivo": ""
+    },
+    {
+      "id": 132,
+      "nombre": "ALEZ CASTRO CIRO JOEL",
+      "documento": "53355513",
+      "edad": "12 años 10 meses",
+      "promedio": 8.36,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 6ta",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "",
+      "motivo": ""
+    },
+    {
+      "id": 133,
+      "nombre": "CARRASCO ESPINOSA VALENTINO LUCIANO",
+      "documento": "53355337",
+      "edad": "13 años 0 meses",
+      "promedio": 8.36,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 3ra",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645560520",
+      "motivo": ""
+    },
+    {
+      "id": 134,
+      "nombre": "JOFRE MUÑOZ ALMA MARLENE",
+      "documento": "53554996",
+      "edad": "12 años 5 meses",
+      "promedio": 8.36,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 7ma",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2646230943",
+      "motivo": ""
+    },
+    {
+      "id": 135,
+      "nombre": "TOBARES PAEZ ALEXANDER BENJAMIN",
+      "documento": "53551769",
+      "edad": "12 años 5 meses",
+      "promedio": 8.34,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 4ta",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645195998",
+      "motivo": ""
+    },
+    {
+      "id": 136,
+      "nombre": "MUÑOZ PENA DYLAN ADRIAN",
+      "documento": "53700465",
+      "edad": "12 años 3 meses",
+      "promedio": 8.33,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 8va",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2644034795",
+      "motivo": ""
+    },
+    {
+      "id": 137,
+      "nombre": "PALMA PATRICIO LISANDRO",
+      "documento": "53356700",
+      "edad": "12 años 10 meses",
+      "promedio": 8.323,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 1ra",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2644456098",
+      "motivo": ""
+    },
+    {
+      "id": 138,
+      "nombre": "ALGAÑARAZ ALEXANDER YUTIEL",
+      "documento": "53931664",
+      "edad": "12 años 0 meses",
+      "promedio": 8.3,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 5ta",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645820729",
+      "motivo": ""
+    },
+    {
+      "id": 139,
+      "nombre": "ROSALES GONZALEZ ALEJANDRO IGNACIO",
+      "documento": "53700463",
+      "edad": "12 años 3 meses",
+      "promedio": 8.32,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 2da",
+      "turno_solicitado": "T.V.",
+      "observaciones": "HERMANO MELLIZO T.V.",
+      "telefono": "2645475380",
+      "motivo": "COMPLETO 23/12"
+    },
+    {
+      "id": 140,
+      "nombre": "GUARDIA CHENA LUCIO ALEXANDER",
+      "documento": "53554717",
+      "edad": "12 años 6 meses",
+      "promedio": 8.3,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 6ta",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645457105",
+      "motivo": ""
+    },
+    {
+      "id": 141,
+      "nombre": "CASTRO HUMA JOSEFINA",
+      "documento": "53929914",
+      "edad": "12 años 3 meses",
+      "promedio": 8.29,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 3ra",
+      "turno_solicitado": "T.M.",
+      "observaciones": "T.M. HERMANO",
+      "telefono": "2645422003",
+      "motivo": ""
+    },
+    {
+      "id": 142,
+      "nombre": "ECHEGARAY PEDRO JOAQUIN",
+      "documento": "53109646",
+      "edad": "12 años 10 meses",
+      "promedio": 8.27,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 7ma",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2646076802",
+      "motivo": ""
+    },
+    {
+      "id": 143,
+      "nombre": "DIAS CORTEZ ALMA MALENA",
+      "documento": "53554250",
+      "edad": "12 años 5 meses",
+      "promedio": 8.24,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 4ta",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2643233198",
+      "motivo": ""
+    },
+    {
+      "id": 144,
+      "nombre": "PALACIO ANGELO ZURIEL",
+      "documento": "53109108",
+      "edad": "13 años 1 meses",
+      "promedio": 8.21,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 8va",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645650383",
+      "motivo": ""
+    },
+    {
+      "id": 145,
+      "nombre": "ESCUDERO MERCADO BASTIAN GAEL",
+      "documento": "53357771",
+      "edad": "12 años 7 meses",
+      "promedio": 8.18,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 1ra",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2646317912",
+      "motivo": ""
+    },
+    {
+      "id": 146,
+      "nombre": "OCAMPO BRIZUELA EMILY KIMEY",
+      "documento": "53358519",
+      "edad": "12 años 9 meses",
+      "promedio": 8.15,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 5ta",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645446201",
+      "motivo": "Completo 23/12"
+    },
+    {
+      "id": 147,
+      "nombre": "DOMINGUEZ SOFIA NATACHA ",
+      "documento": "53931661",
+      "edad": "12 años 0 meses",
+      "promedio": 8.13,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 2da",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2644179537",
+      "motivo": ""
+    },
+    {
+      "id": 148,
+      "nombre": "GODOY LOURDES TATIANA",
+      "documento": "52551902",
+      "edad": "13 años 8 meses",
+      "promedio": 8.13,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 6ta",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "264-4284317",
+      "motivo": ""
+    },
+    {
+      "id": 149,
+      "nombre": "VERAZAY ROITMAN CIRO ROMEO",
+      "documento": "53700492",
+      "edad": "12 años 2 meses",
+      "promedio": 8.092,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 3ra",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645423307",
+      "motivo": ""
+    },
+    {
+      "id": 150,
+      "nombre": "FRUTOS SANTINO DANIEL",
+      "documento": "53588832",
+      "edad": "12 años 7 meses",
+      "promedio": 8.09,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 7ma",
+      "turno_solicitado": "No especificado",
+      "observaciones": "HERMANASTRO",
+      "telefono": "2645322475",
+      "motivo": ""
+    },
+    {
+      "id": 151,
+      "nombre": "SOLAR CORTEZ ANGELES AILEN ",
+      "documento": "52888985",
+      "edad": "12 años 5 meses",
+      "promedio": 8.08,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 4ta",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2643239440",
+      "motivo": ""
+    },
+    {
+      "id": 152,
+      "nombre": "ESCUDERO PAROLDI JEREMIAS TOMAS",
+      "documento": "53998261",
+      "edad": "16 años 0 meses",
+      "promedio": 8.04,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 8va",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645177788",
+      "motivo": ""
+    },
+    {
+      "id": 153,
+      "nombre": "SALINAS JOAQUIN BENICIO",
+      "documento": "53929238",
+      "edad": "12 años 2 meses",
+      "promedio": 8.04,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 1ra",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645033946",
+      "motivo": ""
+    },
+    {
+      "id": 154,
+      "nombre": "ARCE PATIL SANTINO ISAIAS",
+      "documento": "53553317",
+      "edad": "12 años 7 meses",
+      "promedio": 8.03,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 5ta",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2644112879",
+      "motivo": ""
+    },
+    {
+      "id": 155,
+      "nombre": "LUCERO ALEXANDER NICOLAS",
+      "documento": "52887334",
+      "edad": "13 años 6 meses",
+      "promedio": 8.02,
+      "conducta": "B",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 2da",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2644550006",
+      "motivo": ""
+    },
+    {
+      "id": 156,
+      "nombre": "FUENTES MOLINA FRANCESCA ABIGAIL",
+      "documento": "53932917",
+      "edad": "12 años 0 meses",
+      "promedio": 7.99,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 6ta",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2646258570",
+      "motivo": ""
+    },
+    {
+      "id": 157,
+      "nombre": "SILVA PEREZ NAHIR AGUSTIN",
+      "documento": "53697924",
+      "edad": "12 años 4 meses",
+      "promedio": 7.97,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 3ra",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645894529",
+      "motivo": ""
+    },
+    {
+      "id": 158,
+      "nombre": "DIAZ ANGEL BASTIAN",
+      "documento": "53551500",
+      "edad": "12 años 7 meses",
+      "promedio": 7.94,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 7ma",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2644860439",
+      "motivo": ""
+    },
+    {
+      "id": 159,
+      "nombre": "QUIROGA ZAMORA TIAGO EMANUEL",
+      "documento": "53109111",
+      "edad": "13 años 1 meses",
+      "promedio": 7.86,
+      "conducta": "B",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 4ta",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2644597012",
+      "motivo": ""
+    },
+    {
+      "id": 160,
+      "nombre": "CRUZ VILLALOBOS BLADIMIR KEVIN",
+      "documento": "95446813",
+      "edad": "12 años 10 meses",
+      "promedio": 7.85,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 8va",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2643183294",
+      "motivo": ""
+    },
+    {
+      "id": 161,
+      "nombre": "FERNANDEZ DIEGO ALAN AMIR",
+      "documento": "53929481",
+      "edad": "12 años 1 meses",
+      "promedio": 7.824,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 1ra",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645480528",
+      "motivo": ""
+    },
+    {
+      "id": 162,
+      "nombre": "GORDILLO OJEDA ARIANA VICTORIA",
+      "documento": "53356163",
+      "edad": "12 años 11 meses",
+      "promedio": 7.71,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 5ta",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645266832",
+      "motivo": ""
+    },
+    {
+      "id": 163,
+      "nombre": "BARBOZA LUCERO LUCIANO  HERNAN",
+      "documento": "52887243",
+      "edad": "13 años 6 meses",
+      "promedio": 7.68,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 2da",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2644838472",
+      "motivo": ""
+    },
+    {
+      "id": 164,
+      "nombre": "VELAZQUEZ MONTORI WALTER AXEL",
+      "documento": "53931925",
+      "edad": "12 años 0 meses",
+      "promedio": 7.55,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 6ta",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2644168544",
+      "motivo": ""
+    },
+    {
+      "id": 165,
+      "nombre": "CARRION ARRAEZ DIDIER AGUSTIN",
+      "documento": "53554615",
+      "edad": "12 años 7 meses",
+      "promedio": 7.53,
+      "conducta": "B",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 3ra",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645069714",
+      "motivo": ""
+    },
+    {
+      "id": 166,
+      "nombre": "ZARATE RIVERO JONATHAN EZEQUIEL ",
+      "documento": "53697859",
+      "edad": "12 años 5 meses",
+      "promedio": 7.48,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 7ma",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2644459957",
+      "motivo": ""
+    },
+    {
+      "id": 167,
+      "nombre": "DANERI AGUERO FABRICIO SALVARE",
+      "documento": "53931841",
+      "edad": "12 años 0 meses",
+      "promedio": 7.45,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 4ta",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "264649660",
+      "motivo": ""
+    },
+    {
+      "id": 168,
+      "nombre": "FLORES MATIAS ULISES",
+      "documento": "53355845",
+      "edad": "13 años 0 meses",
+      "promedio": 7.45,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 8va",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2644649012",
+      "motivo": ""
+    },
+    {
+      "id": 169,
+      "nombre": "MORENO ROSALES ENZO YUTHIEL",
+      "documento": "53355590",
+      "edad": "12 años 7 meses",
+      "promedio": 7.43,
+      "conducta": "B",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 1ra",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645602269",
+      "motivo": "Completo 23-12"
+    },
+    {
+      "id": 170,
+      "nombre": "PERALTA SANCHEZ JUAN FRANCISCO",
+      "documento": "53551360",
+      "edad": "12 años 8 meses",
+      "promedio": 7.41,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 5ta",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645441919",
+      "motivo": ""
+    },
+    {
+      "id": 171,
+      "nombre": "CORREA SILVA MARIA PILAR",
+      "documento": "53929669",
+      "edad": "12 años 1 meses",
+      "promedio": 7.35,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 2da",
+      "turno_solicitado": "T.M.",
+      "observaciones": " SOBRINA PROF PAROLDI",
+      "telefono": "2644139262",
+      "motivo": ""
+    },
+    {
+      "id": 172,
+      "nombre": "QUILPATAY DANILO PAULO",
+      "documento": "52889880",
+      "edad": "13 años 4 meses",
+      "promedio": 7.26,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 6ta",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645320630",
+      "motivo": ""
+    },
+    {
+      "id": 173,
+      "nombre": "VIDELA MURUA BAUTISTA FELIPE",
+      "documento": "53551713",
+      "edad": "12 años 10 meses",
+      "promedio": 7.24,
+      "conducta": "MB",
+      "condicion": "Vacante Asignada",
+      "curso": "1ro - 3ra",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2646730551",
+      "motivo": ""
+    },
+    {
+      "id": 174,
+      "nombre": "ACOSTA SAMPER VALENTINA ",
+      "documento": "53553210",
+      "edad": "12 años 9 meses",
+      "promedio": 0,
+      "conducta": "MB",
+      "condicion": "Vacante Pendiente",
+      "curso": "1ro - 7ma",
+      "turno_solicitado": "No especificado",
+      "observaciones": "HERMANO T.M.",
+      "telefono": "2645311596",
+      "motivo": "DOCU. INCOMPLETA "
+    },
+    {
+      "id": 175,
+      "nombre": "AGRAS BIAZETTI VICTORIA ISABELA",
+      "documento": "53931501",
+      "edad": "12 años 0 meses",
+      "promedio": 0,
+      "conducta": "MB",
+      "condicion": "Vacante Pendiente",
+      "curso": "1ro - 4ta",
+      "turno_solicitado": "T.M.",
+      "observaciones": "HERMANO TURNO TARDE",
+      "telefono": "2645144047",
+      "motivo": "DOCU. INCOMPLETA "
+    },
+    {
+      "id": 176,
+      "nombre": "ALANIZ PEDERNERA ALMA VALENTINA",
+      "documento": "53553744",
+      "edad": "12 años 4 meses",
+      "promedio": 0,
+      "conducta": "MB",
+      "condicion": "Vacante Pendiente",
+      "curso": "1ro - 8va",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2644454902",
+      "motivo": "DOCU. INCOMPLETA "
+    },
+    {
+      "id": 177,
+      "nombre": "ALBORNOS NEIRA YUTIEL DAVID",
+      "documento": "53929970",
+      "edad": "12 años 2 meses",
+      "promedio": 0,
+      "conducta": "B",
+      "condicion": "Vacante Pendiente",
+      "curso": "1ro - 1ra",
+      "turno_solicitado": "No especificado",
+      "observaciones": "HERMANO T.T.",
+      "telefono": "2644509308",
+      "motivo": "DOCU. INCOMPLETA "
+    },
+    {
+      "id": 178,
+      "nombre": "ALVEAL ESPINOSA KIARA MIA",
+      "documento": "53551784",
+      "edad": "12 años 4 meses",
+      "promedio": 0,
+      "conducta": "MB",
+      "condicion": "Vacante Pendiente",
+      "curso": "1ro - 5ta",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645579739",
+      "motivo": "DOCU. INCOMPLETA "
+    },
+    {
+      "id": 179,
+      "nombre": "ASTUDILLO BARRAGAN JULIA AYME",
+      "documento": "53355599",
+      "edad": "12 años 7 meses",
+      "promedio": 0,
+      "conducta": "MB",
+      "condicion": "Vacante Pendiente",
+      "curso": "1ro - 2da",
+      "turno_solicitado": "No especificado",
+      "observaciones": "HERMANO TURNO TARDE",
+      "telefono": "2644004782",
+      "motivo": "DOCU. INCOMPLETA "
+    },
+    {
+      "id": 180,
+      "nombre": "CASTRO CASTAÑON SOFIA",
+      "documento": "53554668",
+      "edad": "12 años 6 meses",
+      "promedio": 0,
+      "conducta": "MB",
+      "condicion": "Vacante Pendiente",
+      "curso": "1ro - 6ta",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2646727992",
+      "motivo": "DOCU. INCOMPLETA "
+    },
+    {
+      "id": 181,
+      "nombre": "CONTURZO SAMBRANO UMA DENISE",
+      "documento": "53106188",
+      "edad": "12 años 11 meses",
+      "promedio": 0,
+      "conducta": "MB",
+      "condicion": "Vacante Pendiente",
+      "curso": "1ro - 3ra",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645726549",
+      "motivo": "DOCU. INCOMPLETA "
+    },
+    {
+      "id": 182,
+      "nombre": "CRESPO LEIVA ALMA VALENTINA",
+      "documento": "53356423",
+      "edad": "12 años 11 meses",
+      "promedio": 0,
+      "conducta": "MB",
+      "condicion": "Vacante Pendiente",
+      "curso": "1ro - 7ma",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645329116",
+      "motivo": "DOCU. INCOMPLETA "
+    },
+    {
+      "id": 183,
+      "nombre": "DIAZ ELGUETA LUCA BENJAMIN",
+      "documento": "53930141",
+      "edad": "12 años 1 meses",
+      "promedio": 0,
+      "conducta": "",
+      "condicion": "Vacante Pendiente",
+      "curso": "1ro - 4ta",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "26456218486",
+      "motivo": "DOCU. INCOMPLETA "
+    },
+    {
+      "id": 184,
+      "nombre": "DIAZ PAEZ OCTAVIO NICOLAS ",
+      "documento": "53551672",
+      "edad": "12 años 7 meses",
+      "promedio": 0,
+      "conducta": "MB",
+      "condicion": "Vacante Pendiente",
+      "curso": "1ro - 8va",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2644178151",
+      "motivo": "DOCU. INCOMPLETA "
+    },
+    {
+      "id": 185,
+      "nombre": "DISTEFANO RAMIREZ UMA GERALDINE",
+      "documento": "53699115",
+      "edad": "12 años 4 meses",
+      "promedio": 0,
+      "conducta": "",
+      "condicion": "Vacante Pendiente",
+      "curso": "1ro - 1ra",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645573210",
+      "motivo": "DOCU. INCOMPLETA "
+    },
+    {
+      "id": 186,
+      "nombre": "FLORES NAVARRO TEO AMIR",
+      "documento": "53355530",
+      "edad": "12 años 9 meses",
+      "promedio": 0,
+      "conducta": "MB",
+      "condicion": "Vacante Pendiente",
+      "curso": "1ro - 5ta",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645199066",
+      "motivo": "DOCU. INCOMPLETA "
+    },
+    {
+      "id": 187,
+      "nombre": "GIMENEZ THIAGO EMANUEL",
+      "documento": "53356644",
+      "edad": "12 años 10 meses",
+      "promedio": 0,
+      "conducta": "MB",
+      "condicion": "Vacante Pendiente",
+      "curso": "1ro - 2da",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645304815",
+      "motivo": "DOCU. INCOMPLETA "
+    },
+    {
+      "id": 188,
+      "nombre": "MALLEA AMANTE MATEO EZEQUIEL",
+      "documento": "53698573",
+      "edad": "12 años 3 meses",
+      "promedio": 0,
+      "conducta": "MB",
+      "condicion": "Vacante Pendiente",
+      "curso": "1ro - 6ta",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645705257",
+      "motivo": "DOCU. INCOMPLETA "
+    },
+    {
+      "id": 189,
+      "nombre": "MOLL GOMEZ CIRO BAUTISTA",
+      "documento": "53554497",
+      "edad": "12 años 3 meses",
+      "promedio": 0,
+      "conducta": "MB",
+      "condicion": "Vacante Pendiente",
+      "curso": "1ro - 3ra",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2644049677",
+      "motivo": "DOCU. INCOMPLETA "
+    },
+    {
+      "id": 190,
+      "nombre": "MONTAÑA AVILA IGNACIO BENJAMIN",
+      "documento": "53931242",
+      "edad": "12 años 0 meses",
+      "promedio": 0,
+      "conducta": "MB",
+      "condicion": "Vacante Pendiente",
+      "curso": "1ro - 7ma",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2644361761",
+      "motivo": "DOCU. INCOMPLETA "
+    },
+    {
+      "id": 191,
+      "nombre": "MUÑOZ OCAMPO DYLAN SANTINO",
+      "documento": "53553198",
+      "edad": "12 años 8 meses",
+      "promedio": 0,
+      "conducta": "MB",
+      "condicion": "Vacante Pendiente",
+      "curso": "1ro - 4ta",
+      "turno_solicitado": "No especificado",
+      "observaciones": "T.M PROF SAVALL NOELIA",
+      "telefono": "2644594674",
+      "motivo": "DOCU. INCOMPLETA "
+    },
+    {
+      "id": 192,
+      "nombre": "NAVARRO GUZMAN SOFIA MAITE",
+      "documento": "53355571",
+      "edad": "12 años 8 meses",
+      "promedio": 0,
+      "conducta": "MB",
+      "condicion": "Vacante Pendiente",
+      "curso": "1ro - 8va",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2644003250",
+      "motivo": "DOCU. INCOMPLETA "
+    },
+    {
+      "id": 193,
+      "nombre": "ONTIVERO NUÑEZ DYLAN OSAMIR",
+      "documento": "53697902",
+      "edad": "12 años 4 meses",
+      "promedio": 0,
+      "conducta": "MB",
+      "condicion": "Vacante Pendiente",
+      "curso": "1ro - 1ra",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645858858",
+      "motivo": "DOCU. INCOMPLETA "
+    },
+    {
+      "id": 194,
+      "nombre": "PEREZ FERNANDEZ BRIANA NICOL",
+      "documento": "53929168",
+      "edad": "12 años 3 meses",
+      "promedio": 0,
+      "conducta": "MB",
+      "condicion": "Vacante Pendiente",
+      "curso": "1ro - 5ta",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645226495",
+      "motivo": "DOCU. INCOMPLETA "
+    },
+    {
+      "id": 195,
+      "nombre": "QUIROGA SANCHEZ BENICIO LORENZO",
+      "documento": "53357276",
+      "edad": "12 años 10 meses",
+      "promedio": 0,
+      "conducta": "MB",
+      "condicion": "Vacante Pendiente",
+      "curso": "1ro - 2da",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645842490",
+      "motivo": "DOCU. INCOMPLETA "
+    },
+    {
+      "id": 196,
+      "nombre": "TOLEDO NOAH BRITANY",
+      "documento": "53552141",
+      "edad": "12 años 8 meses",
+      "promedio": 0,
+      "conducta": "MB",
+      "condicion": "Vacante Pendiente",
+      "curso": "1ro - 6ta",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645221506",
+      "motivo": "DOCU. INCOMPLETA "
+    },
+    {
+      "id": 197,
+      "nombre": "TORRES RIVERO JUABA INES",
+      "documento": "53553730",
+      "edad": "12 años 5 meses",
+      "promedio": 0,
+      "conducta": "MB",
+      "condicion": "Vacante Pendiente",
+      "curso": "1ro - 3ra",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645623335",
+      "motivo": "DOCU. INCOMPLETA "
+    },
+    {
+      "id": 198,
+      "nombre": "VARGAS IBAZETA TIANA ISABELLA ",
+      "documento": "53700467",
+      "edad": "12 años 2 meses",
+      "promedio": 0,
+      "conducta": "",
+      "condicion": "Vacante Pendiente",
+      "curso": "1ro - 7ma",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2645629958",
+      "motivo": "DOCU. INCOMPLETA "
+    },
+    {
+      "id": 199,
+      "nombre": "VARGAS PEREZ EMILY ALICIA",
+      "documento": "53931206",
+      "edad": "12 años 1 meses",
+      "promedio": 0,
+      "conducta": "MB",
+      "condicion": "Vacante Pendiente",
+      "curso": "1ro - 4ta",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2644838199",
+      "motivo": "DOCU. INCOMPLETA "
+    },
+    {
+      "id": 200,
+      "nombre": "VIDELA LISETH JUDITH",
+      "documento": "53551447",
+      "edad": "12 años 10 meses",
+      "promedio": 0,
+      "conducta": "MB",
+      "condicion": "Vacante Pendiente",
+      "curso": "1ro - 8va",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "2644587035",
+      "motivo": "DOCU. INCOMPLETA "
+    },
+    {
+      "id": 201,
+      "nombre": "",
+      "documento": "",
+      "edad": "126 años 6 meses",
+      "promedio": 0,
+      "conducta": "",
+      "condicion": "",
+      "curso": "1ro - 1ra",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "",
+      "motivo": ""
+    },
+    {
+      "id": 202,
+      "nombre": "",
+      "documento": "",
+      "edad": "126 años 6 meses",
+      "promedio": 0,
+      "conducta": "",
+      "condicion": "",
+      "curso": "1ro - 5ta",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "",
+      "motivo": ""
+    },
+    {
+      "id": 203,
+      "nombre": "",
+      "documento": "",
+      "edad": "126 años 6 meses",
+      "promedio": 0,
+      "conducta": "",
+      "condicion": "",
+      "curso": "1ro - 2da",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "",
+      "motivo": ""
+    },
+    {
+      "id": 204,
+      "nombre": "",
+      "documento": "",
+      "edad": "126 años 6 meses",
+      "promedio": 0,
+      "conducta": "",
+      "condicion": "",
+      "curso": "1ro - 6ta",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "",
+      "motivo": ""
+    },
+    {
+      "id": 205,
+      "nombre": "",
+      "documento": "",
+      "edad": "126 años 6 meses",
+      "promedio": 0,
+      "conducta": "",
+      "condicion": "",
+      "curso": "1ro - 3ra",
+      "turno_solicitado": "No especificado",
+      "observaciones": "",
+      "telefono": "",
+      "motivo": ""
+    }
+  ],
+  "resumen": {
+    "total": 205,
+    "asignadas": 173,
+    "pendientes": 27,
+    "cursos": [
+      "1ro - 1ra",
+      "1ro - 2da",
+      "1ro - 3ra",
+      "1ro - 4ta",
+      "1ro - 5ta",
+      "1ro - 6ta",
+      "1ro - 7ma",
+      "1ro - 8va"
+    ]
+  }
+};
+
+        let alumnosFiltrados = [];
+
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', function() {
+            inicializarApp();
+        });
+
+        function inicializarApp() {
+            cargarEstadisticas();
+            cargarOpcionesCursos();
+            configurarEventListeners();
+        }
+
+        function cargarEstadisticas() {
+            document.getElementById('totalAlumnos').textContent = DB_ALUMNOS.resumen.total;
+            document.getElementById('totalAsignadas').textContent = DB_ALUMNOS.resumen.asignadas;
+            document.getElementById('totalPendientes').textContent = DB_ALUMNOS.resumen.pendientes;
+        }
+
+        function cargarOpcionesCursos() {
+            const cursoSelect = document.getElementById('cursoFilter');
+            DB_ALUMNOS.resumen.cursos.forEach(curso => {
+                const option = document.createElement('option');
+                option.value = curso;
+                option.textContent = curso;
+                cursoSelect.appendChild(option);
+            });
+        }
+
+        function configurarEventListeners() {
+            const searchInput = document.getElementById('searchInput');
+            const searchBtn = document.getElementById('searchBtn');
+            const resetBtn = document.getElementById('resetBtn');
+            const clearSearchBtn = document.getElementById('clearSearchBtn');
+            const cursoFilter = document.getElementById('cursoFilter');
+            const condicionFilter = document.getElementById('condicionFilter');
+            const turnoFilter = document.getElementById('turnoFilter');
+
+            // Búsqueda en tiempo real mientras escribe
+            searchInput.addEventListener('input', function() {
+                if (this.value.length > 0) {
+                    clearSearchBtn.classList.add('active');
+                    if (this.value.length >= 2) {
+                        realizarBusqueda();
+                    }
+                } else {
+                    clearSearchBtn.classList.remove('active');
+                    ocultarResultados();
+                }
+            });
+
+            // Búsqueda al presionar Enter
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    realizarBusqueda();
+                }
+            });
+
+            searchBtn.addEventListener('click', realizarBusqueda);
+            resetBtn.addEventListener('click', limpiarTodo);
+            clearSearchBtn.addEventListener('click', function() {
+                searchInput.value = '';
+                this.classList.remove('active');
+                ocultarResultados();
+                searchInput.focus();
+            });
+
+            // Filtros
+            cursoFilter.addEventListener('change', realizarBusqueda);
+            condicionFilter.addEventListener('change', realizarBusqueda);
+            turnoFilter.addEventListener('change', realizarBusqueda);
+        }
+
+        function realizarBusqueda() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+            const cursoSeleccionado = document.getElementById('cursoFilter').value;
+            const condicionSeleccionada = document.getElementById('condicionFilter').value;
+            const turnoSeleccionado = document.getElementById('turnoFilter').value;
+
+            // Si no hay término de búsqueda ni filtros, no mostrar resultados
+            if (!searchTerm && !cursoSeleccionado && !condicionSeleccionada && !turnoSeleccionado) {
+                ocultarResultados();
+                return;
+            }
+
+            alumnosFiltrados = DB_ALUMNOS.alumnos.filter(alumno => {
+                // Filtro de búsqueda por texto
+                let coincideTexto = true;
+                if (searchTerm) {
+                    coincideTexto = 
+                        alumno.nombre.toLowerCase().includes(searchTerm) ||
+                        alumno.documento.includes(searchTerm);
+                }
+
+                // Filtro por curso
+                let coincideCurso = true;
+                if (cursoSeleccionado) {
+                    coincideCurso = alumno.curso === cursoSeleccionado;
+                }
+
+                // Filtro por condición
+                let coincideCondicion = true;
+                if (condicionSeleccionada) {
+                    coincideCondicion = alumno.condicion === condicionSeleccionada;
+                }
+
+                // Filtro por turno
+                let coincideTurno = true;
+                if (turnoSeleccionado) {
+                    coincideTurno = alumno.turno_solicitado.includes(turnoSeleccionado);
+                }
+
+                return coincideTexto && coincideCurso && coincideCondicion && coincideTurno;
+            });
+
+            mostrarResultados();
+        }
+
+        function mostrarResultados() {
+            const resultsSection = document.getElementById('resultsSection');
+            const resultsGrid = document.getElementById('resultsGrid');
+            const resultsCount = document.getElementById('resultsCount');
+
+            resultsSection.classList.add('active');
+            resultsCount.innerHTML = `Resultados encontrados: <strong>${alumnosFiltrados.length}</strong>`;
+
+            if (alumnosFiltrados.length === 0) {
+                resultsGrid.innerHTML = `
+                    <div class="no-results">
+                        <div class="no-results-icon">🔍</div>
+                        <div class="no-results-text">No se encontraron alumnos</div>
+                        <p>Intente con otro nombre, documento o ajuste los filtros</p>
+                    </div>
+                `;
+                return;
+            }
+
+            resultsGrid.innerHTML = alumnosFiltrados.map(alumno => crearCardAlumno(alumno)).join('');
+        }
+
+        function crearCardAlumno(alumno) {
+            const badgeClass = alumno.condicion === 'Vacante Asignada' ? 'badge-asignada' : 'badge-pendiente';
+            const turnoTexto = alumno.turno_solicitado !== 'No especificado' ? alumno.turno_solicitado : 'No especificado';
+            
+            return `
+                <div class="alumno-card">
+                    <div class="alumno-header">
+                        <div>
+                            <div class="alumno-nombre">${alumno.nombre}</div>
+                            <div class="alumno-documento">DNI: ${alumno.documento}</div>
+                        </div>
+                        <span class="badge ${badgeClass}">${alumno.condicion}</span>
+                    </div>
+                    <div class="alumno-details">
+                        <div class="detail-item">
+                            <span class="detail-label">📚 Curso y División</span>
+                            <span class="detail-value highlight">${alumno.curso}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">🕐 Turno Solicitado</span>
+                            <span class="detail-value">${turnoTexto}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">📊 Promedio</span>
+                            <span class="detail-value">${alumno.promedio > 0 ? alumno.promedio.toFixed(2) : 'N/A'}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">⭐ Conducta</span>
+                            <span class="detail-value">${alumno.conducta || 'N/A'}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">👤 Edad</span>
+                            <span class="detail-value">${alumno.edad}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">📞 Teléfono</span>
+                            <span class="detail-value">${alumno.telefono || 'No registrado'}</span>
+                        </div>
+                        ${alumno.observaciones ? `
+                        <div class="detail-item" style="grid-column: 1 / -1;">
+                            <span class="detail-label">📝 Observaciones</span>
+                            <span class="detail-value">${alumno.observaciones}</span>
+                        </div>
+                        ` : ''}
+                        ${alumno.motivo ? `
+                        <div class="detail-item" style="grid-column: 1 / -1;">
+                            <span class="detail-label">⚠️ Motivo/Estado</span>
+                            <span class="detail-value">${alumno.motivo}</span>
+                        </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+        }
+
+        function ocultarResultados() {
+            document.getElementById('resultsSection').classList.remove('active');
+            alumnosFiltrados = [];
+        }
+
+        function limpiarTodo() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('cursoFilter').value = '';
+            document.getElementById('condicionFilter').value = '';
+            document.getElementById('turnoFilter').value = '';
+            document.getElementById('clearSearchBtn').classList.remove('active');
+            ocultarResultados();
+            document.getElementById('searchInput').focus();
+        }
+    </script>
+</body>
+</html>
